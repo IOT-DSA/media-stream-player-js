@@ -95,7 +95,7 @@ export const Settings: React.FC<SettingsProps> = ({
           value={parameters['resolution']}
           onChange={(e: ChangeEvent<HTMLSelectElement>) => {
             if (e.target.value === '') {
-              onVapix('resolution', '')
+              onVapix('resolution', '640x360')
               return
             }
             onVapix('resolution', e.target.value)
@@ -104,7 +104,8 @@ export const Settings: React.FC<SettingsProps> = ({
           <option value="">default</option>
           <option value="1920x1080">1920 x 1080 (FHD)</option>
           <option value="1280x720">1280 x 720 (HD)</option>
-          <option value="800x600">800 x 600 (VGA)</option>
+          <option value="1024x576">1024 x 576 (qHD)</option>
+          <option value="640x360">640 x 360 (nHD)</option>
         </select>
       </SettingsItem>
       <SettingsItem>

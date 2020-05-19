@@ -49,7 +49,10 @@ const AXIS_API = {
 
 const DEFAULT_VIDEO_CODEC = 'h264'
 
-const wsUri = (host: string) => {
+const wsUri = (host: string, user?: string, pass?: string) => {
+  if (user && pass) { 
+    host = `${user}:${pass}@${host}`;
+  }
   const wsProtocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:'
   return host ? `${wsProtocol}//${host}/rtsp-over-websocket` : ''
 }
@@ -112,6 +115,9 @@ const PARAMETERS = {
     'pull',
     'event',
     'timestamp',
+    // For the VPO project
+    'username',
+    'password',
   ],
 }
 
@@ -148,7 +154,7 @@ export const PlaybackArea: React.FC<PlaybackAreaProps> = ({
 
   switch (api) {
     case AXIS_MEDIA_AMP:
-      const ws = wsUri(host)
+      const ws = wsUri(host, parameters.username, parameters.password)
       const rtsp = rtspUri(host, searchParams)
       const videocodec = parameters.videocodec || DEFAULT_VIDEO_CODEC
 

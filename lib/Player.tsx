@@ -22,7 +22,7 @@ import { Stats } from './Stats'
 import { useSwitch } from './hooks/useSwitch'
 import { MetadataHandler } from './metadata'
 
-const DEFAULT_API_TYPE = AXIS_IMAGE_CGI
+const DEFAULT_API_TYPE = AXIS_MEDIA_AMP
 
 interface PlayerProps {
   hostname: string
