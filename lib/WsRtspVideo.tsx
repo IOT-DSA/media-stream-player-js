@@ -86,6 +86,7 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   const [fetching, setFetching] = useState(false)
 
   useEffect(() => {
+    debugLog('Playing effects: ', play, canplay, playing);
     const videoEl = videoRef.current
 
     if (videoEl === null) {
@@ -111,6 +112,7 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   }, [play, canplay, playing])
 
   useEffect(() => {
+    debugLog('WS/RTSP effects: ', ws, rtsp);
     const videoEl = videoRef.current
 
     if (videoEl === null) {

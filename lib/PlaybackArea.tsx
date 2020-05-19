@@ -6,6 +6,8 @@ import { WsRtspVideo } from './WsRtspVideo'
 import { WsRtspCanvas } from './WsRtspCanvas'
 import { StillImage } from './StillImage'
 import { MetadataHandler } from './metadata'
+import debug from 'debug'
+const debugLog = debug('msp:playback-area');
 
 export const AXIS_IMAGE_CGI = 'jpg'
 const AXIS_VIDEO_CGI = 'mjpg'
@@ -127,6 +129,10 @@ const search = (api: string, parameters: VapixParameters = {}) => {
   }
   const parameterList = PARAMETERS[api]
   return Object.entries(parameters)
+    .filter(([key]) => {
+      if (key === 'username' || key === 'password') return false;
+      return true;
+    })
     .map(([key, value]) => {
       if (!parameterList.includes(key)) {
         console.warn(`undocumented VAPIX parameter ${key}`)
@@ -157,6 +163,7 @@ export const PlaybackArea: React.FC<PlaybackAreaProps> = ({
       const ws = wsUri(host, parameters.username, parameters.password)
       const rtsp = rtspUri(host, searchParams)
       const videocodec = parameters.videocodec || DEFAULT_VIDEO_CODEC
+      debugLog(`PlaybackArea - WS: "${ws}", RTSP: "${rtsp}"`);
 
       switch (videocodec) {
         case 'h264':
