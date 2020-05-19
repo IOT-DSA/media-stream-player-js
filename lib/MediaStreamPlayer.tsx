@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { Player } from './Player'
+import debug from 'debug'
+const debugLog = debug('msp:media-stream-player');
 
 interface InitialAttributes {
   readonly hostname: string
@@ -23,7 +25,7 @@ export class MediaStreamPlayer extends HTMLElement {
 
   public attributeChangeSubscriber(cb: SetStateType) {
     this._setState = cb
-    console.log('State set.');
+    debugLog('State set.');
   }
 
   constructor() {
@@ -41,6 +43,11 @@ export class MediaStreamPlayer extends HTMLElement {
   }
 
   set hostname(value: string) {
+    if (!value) {
+      this.setAttribute('hostname', value);
+      return;
+    }
+
     let i = value.indexOf('@')
     if (i != -1) {
       let creds = value.substring(0, i);
@@ -65,20 +72,6 @@ export class MediaStreamPlayer extends HTMLElement {
   }
 
   connectedCallback() {
-    let i = this.hostname.indexOf('@')
-      if (i != -1) {
-        let creds = this.hostname.substring(0, i);
-        let j = creds.indexOf(':');
-        this.username = creds.substring(0, j);
-        this.password = creds.substring(j + 1);
-        this.hostname = this.hostname.substring(i+1);
-      }
-
-      let hd = new Headers({});
-      if (this.username) {
-        hd.append('Authorization', `Basic ${btoa(`${this.username}:${this.password}`)}`);
-      }
-
     // window.fetch(`http://${this.hostname}/axis-cgi/usergroup.cgi`, {
     //     credentials: 'include',
     //     headers: hd,
@@ -116,7 +109,22 @@ export class MediaStreamPlayer extends HTMLElement {
       return
     }
 
-    const { hostname, autoplay, username, password } = this
+    if (attrName === 'hostname' && value) {
+      let i = value.indexOf('@')
+      if (i != -1) {
+        let creds = value.substring(0, i);
+        let j = creds.indexOf(':');
+        this.username = creds.substring(0, j);
+        this.password = creds.substring(j + 1);
+        value = value.substring(i+1);
+      }
+    }
+
+    let { hostname, autoplay, username, password } = this;
+    if (attrName === 'hostname' && value != hostname) {
+      hostname = value;
+    }
+    debugLog(`MediaStreamPlayer attributeChangedCallback: "${hostname}", autoPlay "${autoplay}", username "${username}", password "${password}"`);
     this._setState({
       hostname,
       autoplay,
@@ -142,6 +150,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = ({
   }, [subscribeAttributesChanged])
 
   const { hostname, autoplay, username, password } = state;
+  debugLog(`PlayerComponentProps: "${hostname}", autoPlay "${autoplay}", username "${username}", password "${password}"`);
   const fmt = "H264";
   const params = {'resolution': '640x360', 'videocodec': 'h264', 'username': username, 'password': password};
 

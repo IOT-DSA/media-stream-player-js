@@ -24,6 +24,9 @@ import { useSwitch } from './hooks/useSwitch'
 import { MetadataHandler } from './metadata'
 import styled from 'styled-components'
 
+import debug from 'debug'
+const debugLog = debug('msp:player');
+
 const DEFAULT_API_TYPE = AXIS_MEDIA_AMP
 
 /**
@@ -121,6 +124,7 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
      */
 
     const onPlayPause = useCallback(() => {
+      debugLog(`Player: onPlayPause called: play: ${play}, hostname: "${hostname}"`);
       if (play) {
         setPlay(false)
       } else {
@@ -248,6 +252,8 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
      * control bar with play/pause/stop/refresh and a settings menu.
      */
 
+    debugLog(`player - play: ${play} or ${autoPlay}, host: "${host}" or "${hostname}", params: ${parameters}`);
+
     return (
       <MediaStreamPlayerContainer className={className}>
         <Limiter ref={limiterRef}>
@@ -256,10 +262,10 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
               <PlaybackArea
                 forwardedRef={ref}
                 refresh={refresh}
-                play={play}
-                host={host}
+                play={autoPlay}
+                host={hostname}
                 api={api}
-                parameters={parameters}
+                parameters={vapixParams}
                 onPlaying={onPlaying}
                 onSdp={onSdp}
                 metadataHandler={metadataHandler}
@@ -274,7 +280,7 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
                   api={api}
                   parameters={parameters}
                   videoProperties={videoProperties}
-                  host={host}
+                  host={hostname}
                   open={showStatsOverlay}
                   refresh={refresh}
                 />
@@ -282,9 +288,9 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
             </Layer>
             <Layer>
               <Controls
-                play={play}
-                src={host}
-                parameters={parameters}
+                play={autoPlay}
+                src={hostname}
+                parameters={vapixParams}
                 onPlay={onPlayPause}
                 onStop={onStop}
                 onRefresh={onRefresh}
