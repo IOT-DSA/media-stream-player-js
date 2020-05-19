@@ -24,7 +24,7 @@ import { useSwitch } from './hooks/useSwitch'
 import { MetadataHandler } from './metadata'
 import styled from 'styled-components'
 
-const DEFAULT_API_TYPE = AXIS_IMAGE_CGI
+const DEFAULT_API_TYPE = AXIS_MEDIA_AMP
 
 /**
  * Wrapper for the entire player that will take up all available place from the
