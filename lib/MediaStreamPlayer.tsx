@@ -6,6 +6,7 @@ const debugLog = debug('msp:media-stream-player');
 
 interface InitialAttributes {
   readonly hostname: string
+  readonly resolution: string
   readonly autoplay: boolean
   readonly username: string
   readonly password: string
@@ -35,7 +36,7 @@ export class MediaStreamPlayer extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['hostname', 'autoplay']
+    return ['hostname', 'autoplay', 'resolution']
   }
 
   get hostname() {
@@ -48,14 +49,6 @@ export class MediaStreamPlayer extends HTMLElement {
       return;
     }
 
-    let i = value.indexOf('@')
-    if (i != -1) {
-      let creds = value.substring(0, i);
-      let j = creds.indexOf(':');
-      this.username = creds.substring(0, j);
-      this.password = creds.substring(j + 1);
-      value = value.substring(i+1);
-    }
     this.setAttribute('hostname', value)
   }
 
@@ -71,32 +64,36 @@ export class MediaStreamPlayer extends HTMLElement {
     }
   }
 
-  connectedCallback() {
-    // window.fetch(`http://${this.hostname}/axis-cgi/usergroup.cgi`, {
-    //     credentials: 'include',
-    //     headers: hd,
-    //     mode: 'no-cors',})
-    //   .then(() => {
-        const { hostname, autoplay, username, password } = this
+  get resolution() {
+    return this.getAttribute('resolution') ?? '640x360'
+  }
 
-        ReactDOM.render(
-          <PlayerComponent
-            subscribeAttributesChanged={(cb) =>
-              this.attributeChangeSubscriber(cb)
-            }
-            initialAttributes={{
-              hostname,
-              autoplay,
-              username,
-              password,
-            }}
-          />,
-          this,
-        )
-      // })
-      // .catch((err) => {
-      //   console.error(`Authorization failed: ${err.message}`)
-      // })
+  set resolution(value: string) {
+    if (!value) {
+      this.setAttribute('resolution', '640x360')
+    } else {
+      this.setAttribute('resolution', value)
+    }
+  }
+
+  connectedCallback() {
+    const { hostname, autoplay, resolution, username, password } = this
+
+    ReactDOM.render(
+      <PlayerComponent
+        subscribeAttributesChanged={(cb) =>
+          this.attributeChangeSubscriber(cb)
+        }
+        initialAttributes={{
+          hostname,
+          autoplay,
+          resolution,
+          username,
+          password,
+        }}
+      />,
+      this,
+    )
   }
 
   disconnectedCallback() {
@@ -109,25 +106,15 @@ export class MediaStreamPlayer extends HTMLElement {
       return
     }
 
-    if (attrName === 'hostname' && value) {
-      let i = value.indexOf('@')
-      if (i != -1) {
-        let creds = value.substring(0, i);
-        let j = creds.indexOf(':');
-        this.username = creds.substring(0, j);
-        this.password = creds.substring(j + 1);
-        value = value.substring(i+1);
-      }
-    }
-
-    let { hostname, autoplay, username, password } = this;
+    let { hostname, autoplay, resolution, username, password } = this;
     if (attrName === 'hostname' && value != hostname) {
       hostname = value;
     }
-    debugLog(`MediaStreamPlayer attributeChangedCallback: "${hostname}", autoPlay "${autoplay}", username "${username}", password "${password}"`);
+    debugLog(`MediaStreamPlayer attributeChangedCallback: Host: "${hostname}", autoPlay "${autoplay}", resolution: "${resolution}", username "${username}", password "${password}"`);
     this._setState({
       hostname,
       autoplay,
+      resolution,
       username,
       password,
     })
@@ -149,10 +136,21 @@ const PlayerComponent: React.FC<PlayerComponentProps> = ({
     subscribeAttributesChanged(setState)
   }, [subscribeAttributesChanged])
 
-  const { hostname, autoplay, username, password } = state;
-  debugLog(`PlayerComponentProps: "${hostname}", autoPlay "${autoplay}", username "${username}", password "${password}"`);
+  let { hostname, autoplay, resolution, username, password } = state;
+
+  if (hostname) {
+    let i = hostname.indexOf('@')
+    if (i != -1) {
+        let creds = hostname.substring(0, i);
+        let j = creds.indexOf(':');
+        username = creds.substring(0, j);
+        password = creds.substring(j + 1);
+        hostname = hostname.substring(i+1);
+    }
+  }
+  debugLog(`PlayerComponentProps: "${hostname}", autoPlay "${autoplay}", resolution: "${resolution}", username "${username}", password "${password}"`);
   const fmt = "H264";
-  const params = {'resolution': '640x360', 'videocodec': 'h264', 'username': username, 'password': password};
+  const params = {'resolution': resolution, 'videocodec': 'h264', 'username': username, 'password': password};
 
   return <Player hostname={hostname} autoPlay={autoplay} format={fmt} vapixParams={params}/>
 }

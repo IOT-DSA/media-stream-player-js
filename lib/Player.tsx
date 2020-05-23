@@ -177,23 +177,6 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
       setRefresh((value) => value + 1)
     }
 
-    useEffect(() => {
-      const cb = () => {
-        if (document.visibilityState === 'visible') {
-          setPlay(true)
-          setHost(hostname)
-        } else if (document.visibilityState === 'hidden') {
-          setPlay(false)
-          setWaiting(false)
-          setHost('')
-        }
-      }
-
-      document.addEventListener('visibilitychange', cb)
-
-      return () => document.removeEventListener('visibilitychange', cb)
-    }, [hostname])
-
     /**
      * Aspect ratio
      *
@@ -252,7 +235,7 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
      * control bar with play/pause/stop/refresh and a settings menu.
      */
 
-    debugLog(`player - play: ${play} or ${autoPlay}, host: "${host}" or "${hostname}", params: ${parameters}`);
+    debugLog(`player - play: ${play} or ${autoPlay}, host: "${host}" or "${hostname}", params: `, parameters, "or: ", vapixParams);
 
     return (
       <MediaStreamPlayerContainer className={className}>
