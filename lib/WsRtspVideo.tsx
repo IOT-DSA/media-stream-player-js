@@ -85,6 +85,9 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   )
   const [fetching, setFetching] = useState(false)
 
+  const [playTime, setPlayTime] = useState(0)
+  const [isFrozen, setFrozen] = useState(false)
+
   useEffect(() => {
     debugLog('Playing effects: ', play, canplay, playing);
     const videoEl = videoRef.current
@@ -110,6 +113,37 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
       })
     }
   }, [play, canplay, playing])
+
+  // Check for a frozen camera feed. 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const videoEl = videoRef.current
+
+      if (videoEl === null || !playing) {
+        return;
+      }
+
+      const curTime = videoEl.currentTime
+      console.log(`CurrentTime: ${curTime} - Last: ${playTime}`);
+      if (curTime === playTime) { 
+        if(!isFrozen) {
+          debugLog('No video movement. Flagging frozen');
+          setFrozen(true);
+        } else {
+          debugLog('Still Frozen. Toggle fetch');
+          setFetching(false);
+          setFrozen(false);
+        }
+      } else if (isFrozen) {
+        debugLog('Times different. Removing frozen flag.');
+        setFrozen(false);
+      }
+
+      setPlayTime(curTime);
+
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
   useEffect(() => {
     debugLog('WS/RTSP effects: ', ws, rtsp);
