@@ -175,20 +175,21 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   useEffect(() => {
     debugLog(`Frozen for: ${frozenSecs} secs`);
 
-    if (frozenSecs > 2) {
-      debugLog(`Attempting to restart RTSP feed`);
-      // pipeline?.rtsp.stop();
-      pipeline?.close();
-      if (!videoRef || !videoRef.current) return;
-      const pl = new pipelines.Html5VideoPipeline({
-        ws: { uri: ws },
-        rtsp: { uri: rtsp },
-        mediaElement: videoRef.current,
-      })
-      setFrozen(0);
-      setPipeline(pl);
-      setFetching(false);
-    }
+    if (frozenSecs < 3 || !videoRef || !videoRef.current) return;
+
+    debugLog("Attempting to restart RTSP feed");
+    // pipeline?.rtsp.stop();
+    pipeline?.close();
+
+    const pl = new pipelines.Html5VideoPipeline({
+      ws: { uri: ws },
+      rtsp: { uri: rtsp },
+      mediaElement: videoRef.current,
+    })
+
+    setFrozen(0);
+    setPipeline(pl);
+    setFetching(false);
   }, [frozenSecs]);
 
   // keep a stable reference to the external SDP handler
