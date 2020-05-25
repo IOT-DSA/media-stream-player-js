@@ -86,7 +86,7 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   const [fetching, setFetching] = useState(false)
 
   const [playTime, setPlayTime] = useState(0)
-  const [isFrozen, setFrozen] = useState(false)
+  const [frozenSecs, setFrozen] = useState(0)
 
   useEffect(() => {
     debugLog('Playing effects: ', play, canplay, playing);
@@ -125,18 +125,10 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
 
       const curTime = videoEl.currentTime
       console.log(`CurrentTime: ${curTime} - Last: ${playTime}`);
+
       if (curTime === playTime) { 
-        if(!isFrozen) {
-          debugLog('No video movement. Flagging frozen');
-          setFrozen(true);
-        } else {
-          debugLog('Still Frozen. Toggle fetch');
-          setFetching(false);
-          setFrozen(false);
-        }
-      } else if (isFrozen) {
-        debugLog('Times different. Removing frozen flag.');
-        setFrozen(false);
+        debugLog('No video movement. Flagging frozen');
+        setFrozen(frozenSecs + 1);
       }
 
       setPlayTime(curTime);
@@ -150,7 +142,7 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
     const videoEl = videoRef.current
 
     if (videoEl === null) {
-      return
+      return;
     }
 
     if (!ws || !rtsp) {
@@ -179,6 +171,25 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
       }
     }
   }, [ws, rtsp])
+
+  useEffect(() => {
+    debugLog(`Frozen for: ${frozenSecs} secs`);
+
+    if (frozenSecs > 2) {
+      debugLog(`Attempting to restart RTSP feed`);
+      // pipeline?.rtsp.stop();
+      pipeline?.close();
+      if (!videoRef || !videoRef.current) return;
+      const pl = new pipelines.Html5VideoPipeline({
+        ws: { uri: ws },
+        rtsp: { uri: rtsp },
+        mediaElement: videoRef.current,
+      })
+      setFrozen(0);
+      setPipeline(pl);
+      setFetching(false);
+    }
+  }, [frozenSecs]);
 
   // keep a stable reference to the external SDP handler
   const __onSdpRef = useRef(onSdp)
