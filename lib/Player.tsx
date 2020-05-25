@@ -28,6 +28,7 @@ import debug from 'debug'
 const debugLog = debug('msp:player');
 
 const DEFAULT_API_TYPE = AXIS_MEDIA_AMP
+<<<<<<< HEAD
 
 /**
  * Wrapper for the entire player that will take up all available place from the
@@ -56,6 +57,8 @@ const Limiter = styled.div`
   justify-content: center;
   align-items: center;
 `
+=======
+>>>>>>> 3c67df168e94eaf0899e2f34e93044e6d498a835
 
 interface PlayerProps {
   hostname: string
