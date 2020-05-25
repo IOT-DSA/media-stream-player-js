@@ -141,20 +141,7 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
     debugLog('WS/RTSP effects: ', ws, rtsp);
     const videoEl = videoRef.current
 
-<<<<<<< HEAD
     if (ws && rtsp && videoEl) {
-=======
-    if (videoEl === null) {
-      return;
-    }
-
-    if (!ws || !rtsp) {
-      debugLog('src removed')
-      videoEl.src = ''
-      unsetCanplay()
-      unsetPlaying()
-    } else if (videoRef.current) {
->>>>>>> Restart entire pipeline not just retrigger it
       debugLog('create pipeline', ws, rtsp)
       const pipeline = new pipelines.Html5VideoPipeline({
         ws: { uri: ws },
