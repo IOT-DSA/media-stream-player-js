@@ -89,7 +89,6 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   const [frozenSecs, setFrozen] = useState(0)
 
   useEffect(() => {
-    debugLog('Playing effects: ', play, canplay, playing);
     const videoEl = videoRef.current
 
     if (videoEl === null) {
@@ -133,6 +132,7 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
         debugLog('Video no longer frozen. Clearing flag.');
         setFrozen(0);
       }
+
       setPlayTime(curTime);
 
     }, 1000);
@@ -140,7 +140,6 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
   });
 
   useEffect(() => {
-    debugLog('WS/RTSP effects: ', ws, rtsp);
     const videoEl = videoRef.current
 
     if (ws && rtsp && videoEl) {
