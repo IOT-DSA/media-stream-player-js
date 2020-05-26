@@ -163,7 +163,6 @@ export const PlaybackArea: React.FC<PlaybackAreaProps> = ({
       const ws = wsUri(host, parameters.username, parameters.password)
       const rtsp = rtspUri(host, searchParams)
       const videocodec = parameters.videocodec || DEFAULT_VIDEO_CODEC
-      debugLog(`PlaybackArea - WS: "${ws}", RTSP: "${rtsp}"`);
 
       switch (videocodec) {
         case 'h264':

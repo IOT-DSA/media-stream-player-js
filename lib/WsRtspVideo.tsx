@@ -129,8 +129,10 @@ export const WsRtspVideo: React.FC<WsRtspVideoProps> = ({
       if (curTime === playTime) { 
         debugLog('No video movement. Flagging frozen');
         setFrozen(frozenSecs + 1);
+      } else if (frozenSecs) {
+        debugLog('Video no longer frozen. Clearing flag.');
+        setFrozen(0);
       }
-
       setPlayTime(curTime);
 
     }, 1000);

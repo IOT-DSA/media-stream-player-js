@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { Player } from './Player'
-import debug from 'debug'
-const debugLog = debug('msp:media-stream-player');
 
 interface InitialAttributes {
   readonly hostname: string
@@ -26,7 +24,6 @@ export class MediaStreamPlayer extends HTMLElement {
 
   public attributeChangeSubscriber(cb: SetStateType) {
     this._setState = cb
-    debugLog('State set.');
   }
 
   constructor() {
@@ -110,7 +107,6 @@ export class MediaStreamPlayer extends HTMLElement {
     if (attrName === 'hostname' && value != hostname) {
       hostname = value;
     }
-    debugLog(`MediaStreamPlayer attributeChangedCallback: Host: "${hostname}", autoPlay "${autoplay}", resolution: "${resolution}", username "${username}", password "${password}"`);
     this._setState({
       hostname,
       autoplay,
@@ -148,7 +144,6 @@ const PlayerComponent: React.FC<PlayerComponentProps> = ({
         hostname = hostname.substring(i+1);
     }
   }
-  debugLog(`PlayerComponentProps: "${hostname}", autoPlay "${autoplay}", resolution: "${resolution}", username "${username}", password "${password}"`);
   const fmt = "H264";
   const params = {'resolution': resolution, 'videocodec': 'h264', 'username': username, 'password': password};
 

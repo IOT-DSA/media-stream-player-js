@@ -124,7 +124,6 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
      */
 
     const onPlayPause = useCallback(() => {
-      debugLog(`Player: onPlayPause called: play: ${play}, hostname: "${hostname}"`);
       if (play) {
         setPlay(false)
       } else {
@@ -234,8 +233,6 @@ export const Player = forwardRef<PlayerNativeElement, PlayerProps>(
      * There is a layer for the spinner (feedback), a statistics overlay, and a
      * control bar with play/pause/stop/refresh and a settings menu.
      */
-
-    debugLog(`player - play: ${play} or ${autoPlay}, host: "${host}" or "${hostname}", params: `, parameters, "or: ", vapixParams);
 
     return (
       <MediaStreamPlayerContainer className={className}>
